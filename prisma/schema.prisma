@@ -14,6 +14,19 @@ model Author {
   id          String @id @default(uuid())
   name        String @unique
   country     String
+
+  books       Book[]
 }
 
+model Book {
+  id          String @id @default(uuid())
+  title       String @unique
+  rating      Int
+  price       Int
+  author      Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
