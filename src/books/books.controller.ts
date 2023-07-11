@@ -8,10 +8,12 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDTO } from 'src/books/dtos/create-book.dto';
 import { UpdateBookDTO } from 'src/books/dtos/update-book.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('books')
 export class BooksController {
@@ -27,10 +29,12 @@ export class BooksController {
     return book;
   }
   @Post('/')
+  @UseGuards(JwtAuthGuard)
   create(@Body() bookData: CreateBookDTO) {
     return this.booksService.create(bookData);
   }
   @Put('/:id')
+  @UseGuards(JwtAuthGuard)
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() productData: UpdateBookDTO,
@@ -42,6 +46,7 @@ export class BooksController {
     return { success: true };
   }
   @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
   async deleteById(@Param('id', new ParseUUIDPipe()) id: string) {
     if (!(await this.booksService.getById(id)))
       throw new NotFoundException('Book not found');
