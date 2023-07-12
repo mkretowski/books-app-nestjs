@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Book } from '@prisma/client';
+import { Book, User } from '@prisma/client';
 
 @Injectable()
 export class BooksService {
@@ -68,5 +68,27 @@ export class BooksService {
     return this.prismaService.book.delete({
       where: { id },
     });
+  }
+  public async like(userId: User['id'], bookId: Book['id']) {
+    try {
+      return await this.prismaService.book.update({
+        where: { id: bookId },
+        data: {
+          users: {
+            create: {
+              user: {
+                connect: { id: userId },
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2002')
+        throw new ConflictException('Book is already liked.');
+      if (error.code === 'P2025')
+        throw new BadRequestException("Book or user doesn't exist");
+      throw error;
+    }
   }
 }

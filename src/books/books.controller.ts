@@ -53,4 +53,14 @@ export class BooksController {
     await this.booksService.deleteById(id);
     return { success: true };
   }
+  @Post('/like')
+  @UseGuards(JwtAuthGuard)
+  like(
+    @Body('bookId', new ParseUUIDPipe())
+    bookId: string,
+    @Body('userId', new ParseUUIDPipe())
+    userId: string,
+  ) {
+    return this.booksService.like(userId, bookId);
+  }
 }
